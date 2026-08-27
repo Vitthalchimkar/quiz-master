@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Quiz Master</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    color: white;
+}
+
+.container {
+    width: 92%;
+    max-width: 700px;
+    margin: auto;
+    padding: 25px 0;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+.card {
+    background: white;
+    color: #222;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+.logo {
+    font-size: 42px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.category-btn {
+    border: none;
+    padding: 25px 10px;
+    border-radius: 15px;
+    font-size: 17px;
+    cursor: pointer;
+    background: #f2f2f2;
+    transition: 0.2s;
+}
+
+.category-btn:hover {
+    transform: scale(1.03);
+    background: #e5e5e5;
+}
+
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+#category-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#timer {
+    background: #222;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background: #ddd;
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #667eea;
+    transition: width 0.3s;
+}
+
+#question-number {
+    color: #777;
+    font-size: 14px;
+}
+
+#question {
+    font-size: 24px;
+    margin: 20px 0;
+    line-height: 1.4;
+}
+
+.answer {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.answer:hover:not(:disabled) {
+    border-color: #667eea;
+    transform: translateX(4px);
+}
+
+.answer:disabled {
+    cursor: not-allowed;
+}
+
+.correct {
+    background: #c8f7d2 !important;
+    border-color: #2ecc71 !important;
+}
+
+.wrong {
+    background: #ffcaca !important;
+    border-color: #e74c3c !important;
+}
+
+.main-btn {
+    width: 100%;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    background: #667eea;
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.main-btn:hover {
+    opacity: 0.9;
+}
+
+#next-btn {
+    display: none;
+}
+
+.result-score {
+    font-size: 45px;
+    text-align: center;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.result-message {
+    text-align: center;
+    font-size: 18px;
+}
+
+.best-score {
+    text-align: center;
+    color: #666;
+    margin-top: 15px;
+}
+
+@media (max-width: 500px) {
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    #question {
+        font-size: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- HOME SCREEN -->
+<div id="home-screen" class="screen active">
+    <div class="card">
+
+        <div class="logo">🎮</div>
+
+        <h1>Quiz Master</h1>
+
+        <p class="subtitle">
+            Choose a category and test your knowledge!
+        </p>
+
+        <div class="category-grid">
+
+            <button class="category-btn"
+                onclick="startQuiz('general')">
+                🌍<br>General Knowledge
+            </button>
+
+            <button class="category-btn"
+                onclick="startQuiz('science')">
+                🔬<br>Science
+            </button>
+
+            <button class="category-btn"
+                onclick="startQuiz('gaming')">
+                🎮<br>Gaming
+            </button>
+
+            <button class="category-btn"
+                onclick="startQuiz('sports')">
+                🏆<br>Sports
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen" class="screen">
+
+    <div class="card">
+
+        <div class="quiz-header">
+
+            <div id="category-title">
+                Quiz
+            </div>
+
+            <div id="timer">
+                ⏱️ 15
+            </div>
+
+        </div>
+
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+
+        <div id="question-number"></div>
+
+        <div id="question"></div>
+
+        <div id="answers"></div>
+
+        <button id="next-btn"
+            class="main-btn"
+            onclick="nextQuestion()">
+            Next Question ➡️
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- RESULT SCREEN -->
+<div id="result-screen" class="screen">
+
+    <div class="card">
+
+        <div class="logo">🏆</div>
+
+        <h1>Quiz Complete!</h1>
+
+        <div id="final-score"
+            class="result-score">
+        </div>
+
+        <p id="result-message"
+            class="result-message">
+        </p>
+
+        <p id="best-score"
+            class="best-score">
+        </p>
+
+        <button class="main-btn"
+            onclick="restartQuiz()">
+            🔄 Play Again
+        </button>
+
+        <button class="main-btn"
+            onclick="goHome()">
+            🏠 Back to Home
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   QUIZ QUESTIONS
+========================= */
+
+const quizzes = {
+
+general: [
+{
+    question: "Which planet is known as the Red Planet?",
+    answers: ["Earth", "Mars", "Jupiter", "Venus"],
+    correct: "Mars"
+},
+{
+    question: "What is the capital of India?",
+    answers: ["Mumbai", "New Delhi", "Pune", "Chennai"],
+    correct: "New Delhi"
+},
+{
+    question: "Which is the largest ocean on Earth?",
+    answers: [
+        "Atlantic Ocean",
+        "Indian Ocean",
+        "Pacific Ocean",
+        "Arctic Ocean"
+    ],
+    correct: "Pacific Ocean"
+},
+{
+    question: "How many continents are there?",
+    answers: ["5", "6", "7", "8"],
+    correct: "7"
+},
+{
+    question: "Which animal is known as the King of the Jungle?",
+    answers: ["Tiger", "Lion", "Elephant", "Leopard"],
+    correct: "Lion"
+}
+],
+
+science: [
+{
+    question: "What is H₂O commonly known as?",
+    answers: ["Oxygen", "Water", "Hydrogen", "Salt"],
+    correct: "Water"
+},
+{
+    question: "Which planet is closest to the Sun?",
+    answers: ["Venus", "Earth", "Mercury", "Mars"],
+    correct: "Mercury"
+},
+{
+    question: "Which organ pumps blood around the body?",
+    answers: ["Brain", "Lungs", "Heart", "Stomach"],
+    correct: "Heart"
+},
+{
+    question: "What gas do plants mainly use for photosynthesis?",
+    answers: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"],
+    correct: "Carbon Dioxide"
+},
+{
+    question: "How many bones does an adult human usually have?",
+    answers: ["106", "206", "306", "406"],
+    correct: "206"
+}
+],
+
+gaming: [
+{
+    question: "Which company created Minecraft?",
+    answers: ["Mojang", "Nintendo", "Sony", "Ubisoft"],
+    correct: "Mojang"
+},
+{
+    question: "Which game features the character Mario?",
+    answers: ["Minecraft", "Super Mario", "Fortnite", "Roblox"],
+    correct: "Super Mario"
+},
+{
+    question: "What does NPC stand for in gaming?",
+    answers: [
+        "New Player Character",
+        "Non-Playable Character",
+        "National Play Champion",
+        "Next Power Controller"
+    ],
+    correct: "Non-Playable Character"
+},
+{
+    question: "Which game is famous for building with blocks?",
+    answers: ["Minecraft", "FIFA", "Among Us", "Clash Royale"],
+    correct: "Minecraft"
+},
+{
+    question: "Which company makes the PlayStation console?",
+    answers: ["Microsoft", "Nintendo", "Sony", "Sega"],
+    correct: "Sony"
+}
+],
+
+sports: [
+{
+    question: "How many players are on a football team on the field?",
+    answers: ["9", "10", "11", "12"],
+    correct: "11"
+},
+{
+    question: "Which sport uses a bat, ball and wickets?",
+    answers: ["Football", "Cricket", "Tennis", "Hockey"],
+    correct: "Cricket"
+},
+{
+    question: "Which country hosts the Wimbledon tennis tournament?",
+    answers: ["USA", "India", "United Kingdom", "Australia"],
+    correct: "United Kingdom"
+},
+{
+    question: "How many rings are on the Olympic symbol?",
+    answers: ["4", "5", "6", "7"],
+    correct: "5"
+},
+{
+    question: "Which sport is played at the NBA?",
+    answers: ["Football", "Basketball", "Cricket", "Baseball"],
+    correct: "Basketball"
+}
+]
+
+};
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let currentCategory = "";
+let currentQuestions = [];
+
+let currentQuestion = 0;
+let score = 0;
+
+let timeLeft = 15;
+let timer;
+let answered = false;
+
+
+/* =========================
+   START QUIZ
+========================= */
+
+function startQuiz(category) {
+
+    currentCategory = category;
+
+    currentQuestions = [...quizzes[category]];
+
+    currentQuestion = 0;
+    score = 0;
+
+    showScreen("quiz-screen");
+
+    document.getElementById("category-title").innerText =
+        category.toUpperCase() + " QUIZ";
+
+    loadQuestion();
+
+}
+
+
+/* =========================
+   LOAD QUESTION
+========================= */
+
+function loadQuestion() {
+
+    clearInterval(timer);
+
+    answered = false;
+
+    timeLeft = 15;
+
+    updateTimer();
+
+    const question =
+        currentQuestions[currentQuestion];
+
+    document.getElementById("question-number").innerText =
+        `Question ${currentQuestion + 1} of ${currentQuestions.length}`;
+
+    document.getElementById("question").innerText =
+        question.question;
+
+    document.getElementById("progress-bar").style.width =
+        `${((currentQuestion + 1) / currentQuestions.length) * 100}%`;
+
+    const answersDiv =
+        document.getElementById("answers");
+
+    answersDiv.innerHTML = "";
+
+    document.getElementById("next-btn").style.display =
+        "none";
+
+    question.answers.forEach(answer => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "answer";
+
+        button.innerText = answer;
+
+        button.onclick = () =>
+            selectAnswer(button, answer);
+
+        answersDiv.appendChild(button);
+
+    });
+
+    startTimer();
+
+}
+
+
+/* =========================
+   TIMER
+========================= */
+
+function startTimer() {
+
+    timer = setInterval(() => {
+
+        timeLeft--;
+
+        updateTimer();
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timer);
+
+            if (!answered) {
+
+                timeOut();
+
+            }
+
+        }
+
+    }, 1000);
+
+}
+
+function updateTimer() {
+
+    document.getElementById("timer").innerText =
+        `⏱️ ${timeLeft}`;
+
+}
+
+function timeOut() {
+
+    answered = true;
+
+    const correctAnswer =
+        currentQuestions[currentQuestion].correct;
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(button => {
+
+        button.disabled = true;
+
+        if (button.innerText === correctAnswer) {
+
+            button.classList.add("correct");
+
+        }
+
+    });
+
+    document.getElementById("next-btn").style.display =
+        "block";
+
+}
+
+
+/* =========================
+   SELECT ANSWER
+========================= */
+
+function selectAnswer(button, answer) {
+
+    if (answered) return;
+
+    answered = true;
+
+    clearInterval(timer);
+
+    const correctAnswer =
+        currentQuestions[currentQuestion].correct;
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(btn => {
+
+        btn.disabled = true;
+
+        if (btn.innerText === correctAnswer) {
+
+            btn.classList.add("correct");
+
+        }
+
+    });
+
+    if (answer === correctAnswer) {
+
+        score++;
+
+    } else {
+
+        button.classList.add("wrong");
+
+    }
+
+    document.getElementById("next-btn").style.display =
+        "block";
+
+}
+
+
+/* =========================
+   NEXT QUESTION
+========================= */
+
+function nextQuestion() {
+
+    currentQuestion++;
+
+    if (currentQuestion < currentQuestions.length) {
+
+        loadQuestion();
+
+    } else {
+
+        showResult();
+
+    }
+
+}
+
+
+/* =========================
+   RESULTS
+========================= */
+
+function showResult() {
+
+    clearInterval(timer);
+
+    showScreen("result-screen");
+
+    document.getElementById("final-score").innerText =
+        `${score} / ${currentQuestions.length}`;
+
+    let message = "";
+
+    const percentage =
+        (score / currentQuestions.length) * 100;
+
+    if (percentage === 100) {
+
+        message =
+            "🔥 Perfect score! You are a Quiz Master!";
+
+    } else if (percentage >= 80) {
+
+        message =
+            "🌟 Excellent job!";
+
+    } else if (percentage >= 60) {
+
+        message =
+            "👏 Good job! Keep improving!";
+
+    } else {
+
+        message =
+            "💪 Keep practicing and try again!";
+    }
+
+    document.getElementById("result-message").innerText =
+        message;
+
+    saveBestScore();
+
+}
+
+
+/* =========================
+   SAVE BEST SCORE
+========================= */
+
+function saveBestScore() {
+
+    const key =
+        "quizMaster_" + currentCategory;
+
+    let best =
+        localStorage.getItem(key);
+
+    if (best === null || score > Number(best)) {
+
+        best = score;
+
+        localStorage.setItem(key, score);
+
+    }
+
+    document.getElementById("best-score").innerText =
+        `🏆 Best ${currentCategory} score: ${best} / ${currentQuestions.length}`;
+
+}
+
+
+/* =========================
+   RESTART
+========================= */
+
+function restartQuiz() {
+
+    startQuiz(currentCategory);
+
+}
+
+
+/* =========================
+   HOME
+========================= */
+
+function goHome() {
+
+    clearInterval(timer);
+
+    showScreen("home-screen");
+
+}
+
+
+/* =========================
+   SCREEN SWITCHING
+========================= */
+
+function showScreen(screenId) {
+
+    const screens =
+        document.querySelectorAll(".screen");
+
+    screens.forEach(screen => {
+
+        screen.classList.remove("active");
+
+    });
+
+    document
+        .getElementById(screenId)
+        .classList.add("active");
+
+}
+
+</script>
+
+</body>
+</html>
