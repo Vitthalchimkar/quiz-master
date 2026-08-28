@@ -4,209 +4,595 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>VARAD Quiz Master</title>
+<title>Varad Quiz Master</title>
 
 <style>
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg1: #070b18;
+    --bg2: #111a35;
+    --purple: #8b5cf6;
+    --blue: #38bdf8;
+    --text: #ffffff;
+    --muted: #aeb8d5;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    font-family: Arial, Helvetica, sans-serif;
     min-height: 100vh;
-    color: white;
+    color: var(--text);
+    overflow-x: hidden;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(56,189,248,.18), transparent 25%),
+        radial-gradient(circle at 85% 15%, rgba(139,92,246,.2), transparent 25%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
 }
+
+/* =========================
+   ANIMATED BACKGROUND
+========================= */
+
+.background {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.shape {
+    position: absolute;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.025);
+    backdrop-filter: blur(2px);
+    animation: drift 14s infinite ease-in-out;
+}
+
+.shape.one {
+    width: 180px;
+    height: 180px;
+    left: -50px;
+    top: 15%;
+    transform: rotate(25deg);
+}
+
+.shape.two {
+    width: 240px;
+    height: 240px;
+    right: -80px;
+    top: 50%;
+    transform: rotate(45deg);
+    animation-delay: -4s;
+}
+
+.shape.three {
+    width: 120px;
+    height: 120px;
+    left: 45%;
+    bottom: -30px;
+    transform: rotate(20deg);
+    animation-delay: -8s;
+}
+
+@keyframes drift {
+    0%,100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: 0 -25px;
+    }
+}
+
+/* =========================
+   LAYOUT
+========================= */
 
 .container {
     width: 92%;
-    max-width: 700px;
+    max-width: 1050px;
     margin: auto;
-    padding: 25px 0;
 }
 
 .screen {
     display: none;
+    min-height: 100vh;
 }
 
 .screen.active {
     display: block;
 }
 
-.card {
-    background: white;
-    color: #222;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+/* =========================
+   HOME
+========================= */
+
+.home {
+    padding: 45px 0 30px;
+    perspective: 1200px;
 }
 
-h1, h2 {
+/* 3D LOGO */
+
+.logo-area {
     text-align: center;
+    margin-bottom: 35px;
 }
 
-.logo {
-    font-size: 42px;
-    text-align: center;
-    margin-bottom: 10px;
+.trophy-3d {
+    width: 110px;
+    height: 110px;
+    margin: auto auto 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    font-size: 58px;
+
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.03));
+
+    border: 1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+        0 25px 50px rgba(0,0,0,.35),
+        inset 7px 7px 14px rgba(255,255,255,.08),
+        inset -7px -7px 14px rgba(0,0,0,.25);
+
+    transform: rotateX(12deg) rotateY(-12deg);
+    animation: trophyFloat 3s ease-in-out infinite;
 }
 
-.subtitle {
+@keyframes trophyFloat {
+    0%,100% {
+        transform: translateY(0) rotateX(12deg) rotateY(-12deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotateX(12deg) rotateY(12deg);
+    }
+}
+
+.logo-title {
+    font-size: clamp(34px, 7vw, 64px);
+    font-weight: 1000;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow:
+        0 5px 0 rgba(0,0,0,.25),
+        0 12px 25px rgba(0,0,0,.35);
+}
+
+.logo-title span {
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.tagline {
+    color: var(--muted);
+    margin-top: 14px;
+    font-size: 18px;
+}
+
+/* HERO CARD */
+
+.hero {
+    position: relative;
+    padding: 45px;
     text-align: center;
-    color: #666;
+    border-radius: 30px;
+
+    background:
+        linear-gradient(145deg,
+        rgba(255,255,255,.12),
+        rgba(255,255,255,.035));
+
+    border: 1px solid rgba(255,255,255,.14);
+
+    box-shadow:
+        0 30px 70px rgba(0,0,0,.4),
+        inset 2px 2px 8px rgba(255,255,255,.04),
+        inset -5px -5px 12px rgba(0,0,0,.15);
+
+    transform: rotateX(2deg);
+}
+
+.hero h2 {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: var(--muted);
     margin-bottom: 25px;
+}
+
+.play-button {
+    border: none;
+    padding: 17px 42px;
+    border-radius: 16px;
+    color: white;
+    font-size: 19px;
+    font-weight: bold;
+    cursor: pointer;
+
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+
+    box-shadow:
+        0 9px 0 #392080,
+        0 18px 30px rgba(37,99,235,.25);
+
+    transition: .18s ease;
+}
+
+.play-button:hover {
+    transform: translateY(-4px);
+}
+
+.play-button:active {
+    transform: translateY(5px);
+    box-shadow:
+        0 3px 0 #392080,
+        0 10px 20px rgba(37,99,235,.2);
+}
+
+/* =========================
+   CATEGORIES
+========================= */
+
+.categories-title {
+    text-align: center;
+    margin: 55px 0 25px;
+    font-size: 31px;
 }
 
 .category-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
 }
 
-.category-btn {
-    border: none;
-    padding: 25px 10px;
-    border-radius: 15px;
-    font-size: 17px;
+.category-card {
+    min-height: 210px;
+    padding: 28px 18px;
+    text-align: center;
     cursor: pointer;
-    background: #f2f2f2;
-    transition: 0.2s;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(145deg,
+        rgba(255,255,255,.11),
+        rgba(255,255,255,.025));
+
+    border: 1px solid rgba(255,255,255,.12);
+
+    box-shadow:
+        0 18px 35px rgba(0,0,0,.3),
+        inset 4px 4px 9px rgba(255,255,255,.04),
+        inset -5px -5px 10px rgba(0,0,0,.15);
+
+    transform:
+        perspective(700px)
+        rotateX(5deg)
+        rotateY(0deg);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
 }
 
-.category-btn:hover {
-    transform: scale(1.03);
-    background: #e5e5e5;
+.category-card:hover {
+    transform:
+        perspective(700px)
+        rotateX(0deg)
+        rotateY(-7deg)
+        translateY(-12px);
+
+    border-color: rgba(56,189,248,.45);
+
+    box-shadow:
+        0 30px 50px rgba(0,0,0,.45),
+        0 0 30px rgba(56,189,248,.08);
 }
 
-.quiz-header {
+.category-icon {
+    width: 78px;
+    height: 78px;
+    margin: auto auto 18px;
+    display: grid;
+    place-items: center;
+
+    border-radius: 20px;
+    font-size: 38px;
+
+    background:
+        linear-gradient(145deg,
+        rgba(255,255,255,.15),
+        rgba(255,255,255,.03));
+
+    box-shadow:
+        7px 7px 15px rgba(0,0,0,.25),
+        -4px -4px 10px rgba(255,255,255,.03);
+}
+
+.category-card h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.category-card p {
+    color: #9da8c7;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.footer {
+    text-align: center;
+    color: #76809f;
+    padding: 40px 0 10px;
+}
+
+/* =========================
+   QUIZ
+========================= */
+
+.quiz-wrapper {
+    padding: 30px 0;
+}
+
+.quiz-card {
+    background: rgba(255,255,255,.97);
+    color: #151827;
+    border-radius: 28px;
+    padding: 32px;
+
+    box-shadow:
+        0 35px 70px rgba(0,0,0,.4),
+        0 8px 0 rgba(0,0,0,.08);
+}
+
+.quiz-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 
 #category-title {
+    font-weight: 900;
     font-size: 18px;
-    font-weight: bold;
 }
 
 #timer {
-    background: #222;
+    background: #151827;
     color: white;
-    padding: 8px 14px;
-    border-radius: 20px;
+    padding: 9px 15px;
+    border-radius: 100px;
     font-weight: bold;
 }
 
 .progress-container {
-    width: 100%;
-    height: 10px;
-    background: #ddd;
-    border-radius: 10px;
-    margin: 20px 0;
+    height: 11px;
+    background: #e7e7eb;
+    border-radius: 20px;
+    margin: 22px 0;
     overflow: hidden;
 }
 
 #progress-bar {
-    height: 100%;
     width: 0%;
-    background: #667eea;
-    transition: width 0.3s;
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #8b5cf6);
+    transition: width .3s ease;
 }
 
 #question-number {
-    color: #777;
+    color: #73798b;
     font-size: 14px;
 }
 
 #question {
-    font-size: 24px;
+    font-size: 25px;
+    line-height: 1.45;
     margin: 20px 0;
-    line-height: 1.4;
+    font-weight: 800;
 }
 
 .answer {
     width: 100%;
-    padding: 15px;
-    margin: 10px 0;
-    border: 2px solid #ddd;
-    background: white;
-    border-radius: 12px;
-    cursor: pointer;
+    padding: 16px;
+    margin: 11px 0;
+
+    border: 2px solid #e2e3e8;
+    border-radius: 15px;
+
+    background: #fff;
+    color: #151827;
+
     font-size: 16px;
     text-align: left;
-    transition: 0.2s;
+    cursor: pointer;
+
+    box-shadow: 0 5px 0 #e3e3e8;
+
+    transition: .15s ease;
 }
 
 .answer:hover:not(:disabled) {
-    border-color: #667eea;
-    transform: translateX(4px);
+    transform: translateY(-2px);
+    border-color: #7c8cff;
+    box-shadow: 0 7px 0 #d7d9e5;
+}
+
+.answer:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #d7d9e5;
 }
 
 .answer:disabled {
-    cursor: not-allowed;
+    cursor: default;
 }
 
 .correct {
-    background: #c8f7d2 !important;
-    border-color: #2ecc71 !important;
+    background: #ccf8d7 !important;
+    border-color: #28a745 !important;
+    box-shadow: 0 5px 0 #8ed59e !important;
 }
 
 .wrong {
-    background: #ffcaca !important;
-    border-color: #e74c3c !important;
+    background: #ffd0d0 !important;
+    border-color: #e34a4a !important;
+    box-shadow: 0 5px 0 #e59a9a !important;
 }
 
-.main-btn {
+.next-button {
+    display: none;
     width: 100%;
     border: none;
+    border-radius: 15px;
     padding: 15px;
-    border-radius: 12px;
+    margin-top: 15px;
+
+    background: #151827;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+
+    box-shadow: 0 6px 0 #090b14;
+}
+
+.next-button:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #090b14;
+}
+
+/* =========================
+   RESULTS
+========================= */
+
+.result-wrapper {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 25px 0;
+}
+
+.result-card {
+    width: 92%;
+    max-width: 560px;
+    background: rgba(255,255,255,.97);
+    color: #151827;
+
+    border-radius: 28px;
+    padding: 42px;
+    text-align: center;
+
+    box-shadow:
+        0 35px 75px rgba(0,0,0,.4),
+        0 8px 0 rgba(0,0,0,.08);
+}
+
+.result-trophy {
+    font-size: 70px;
+    animation: trophyFloat 3s ease-in-out infinite;
+}
+
+.result-card h1 {
+    margin-top: 12px;
+}
+
+#final-score {
+    font-size: 55px;
+    font-weight: 1000;
+    margin: 18px 0;
+}
+
+#result-message {
+    font-size: 18px;
+    color: #666d7e;
+    margin-bottom: 18px;
+}
+
+#best-score {
+    color: #697084;
+}
+
+.result-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 14px;
+    margin-top: 13px;
+
     background: #667eea;
     color: white;
     font-size: 17px;
-    cursor: pointer;
-    margin-top: 15px;
-}
-
-.main-btn:hover {
-    opacity: 0.9;
-}
-
-#next-btn {
-    display: none;
-}
-
-.result-score {
-    font-size: 45px;
-    text-align: center;
     font-weight: bold;
-    margin: 20px 0;
+    cursor: pointer;
+
+    box-shadow: 0 6px 0 #4253b8;
 }
 
-.result-message {
-    text-align: center;
-    font-size: 18px;
+.result-button:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #4253b8;
 }
 
-.best-score {
-    text-align: center;
-    color: #666;
-    margin-top: 15px;
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 850px) {
+
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 560px) {
+
+    .home {
+        padding-top: 25px;
+    }
+
+    .hero {
+        padding: 30px 20px;
+    }
+
+    .hero h2 {
+        font-size: 25px;
+    }
+
     .category-grid {
         grid-template-columns: 1fr;
     }
 
-    .card {
+    .category-card {
+        min-height: auto;
+    }
+
+    .quiz-card {
         padding: 20px;
     }
 
     #question {
-        font-size: 20px;
+        font-size: 21px;
+    }
+
+    .result-card {
+        padding: 30px 20px;
     }
 }
 </style>
@@ -214,120 +600,223 @@ h1, h2 {
 
 <body>
 
-<div class="container">
+<div class="background">
+    <div class="shape one"></div>
+    <div class="shape two"></div>
+    <div class="shape three"></div>
+</div>
 
-<!-- HOME SCREEN -->
+
+<!-- HOME -->
+
 <div id="home-screen" class="screen active">
-    <div class="card">
 
-        <div class="logo">🎮</div>
+    <div class="container home">
 
-        <h1>VARAD QUIZ MASTER </h1>
+        <div class="logo-area">
 
-        <p class="subtitle">
-            Choose a category and test your knowledge!
-        </p>
+            <div class="trophy-3d">
+                🏆
+            </div>
 
-        <div class="category-grid">
+            <div class="logo-title">
+                VARAD <span>QUIZ MASTER</span>
+            </div>
 
-            <button class="category-btn"
-                onclick="startQuiz('general')">
-                🌍<br>General Knowledge
-            </button>
+            <div class="tagline">
+                Think fast • Play smart • Beat your best score
+            </div>
 
-            <button class="category-btn"
-                onclick="startQuiz('science')">
-                🔬<br>Science
-            </button>
+        </div>
 
-            <button class="category-btn"
-                onclick="startQuiz('gaming')">
-                🎮<br>Gaming
-            </button>
 
-            <button class="category-btn"
-                onclick="startQuiz('sports')">
-                🏆<br>Sports
+        <div class="hero">
+
+            <h2>Ready for the Challenge?</h2>
+
+            <p>
+                Choose a category and prove your knowledge.
+            </p>
+
+            <button class="play-button"
+                    onclick="scrollToCategories()">
+                ▶ PLAY NOW
             </button>
 
         </div>
 
+
+        <h2 class="categories-title">
+            Choose Your Category
+        </h2>
+
+
+        <div id="categories"
+             class="category-grid">
+
+            <div class="category-card"
+                 onclick="startQuiz('general')">
+
+                <div class="category-icon">
+                    🌍
+                </div>
+
+                <h3>General Knowledge</h3>
+
+                <p>
+                    Test your everyday knowledge.
+                </p>
+
+            </div>
+
+
+            <div class="category-card"
+                 onclick="startQuiz('science')">
+
+                <div class="category-icon">
+                    🔬
+                </div>
+
+                <h3>Science</h3>
+
+                <p>
+                    Explore the world of science.
+                </p>
+
+            </div>
+
+
+            <div class="category-card"
+                 onclick="startQuiz('gaming')">
+
+                <div class="category-icon">
+                    🎮
+                </div>
+
+                <h3>Gaming</h3>
+
+                <p>
+                    Test your gaming knowledge.
+                </p>
+
+            </div>
+
+
+            <div class="category-card"
+                 onclick="startQuiz('sports')">
+
+                <div class="category-icon">
+                    🏆
+                </div>
+
+                <h3>Sports</h3>
+
+                <p>
+                    Challenge your sports knowledge.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer">
+            © 2026 Varad Quiz Master
+        </div>
+
     </div>
+
 </div>
 
 
-<!-- QUIZ SCREEN -->
+<!-- QUIZ -->
+
 <div id="quiz-screen" class="screen">
 
-    <div class="card">
+    <div class="container quiz-wrapper">
 
-        <div class="quiz-header">
+        <div class="quiz-card">
 
-            <div id="category-title">
-                Quiz
+            <div class="quiz-top">
+
+                <div id="category-title">
+                    QUIZ
+                </div>
+
+                <div id="timer">
+                    ⏱️ 15
+                </div>
+
             </div>
 
-            <div id="timer">
-                ⏱️ 15
+
+            <div class="progress-container">
+                <div id="progress-bar"></div>
             </div>
 
+
+            <div id="question-number"></div>
+
+            <div id="question"></div>
+
+            <div id="answers"></div>
+
+
+            <button id="next-btn"
+                    class="next-button"
+                    onclick="nextQuestion()">
+
+                Next Question ➡️
+
+            </button>
+
         </div>
-
-        <div class="progress-container">
-            <div id="progress-bar"></div>
-        </div>
-
-        <div id="question-number"></div>
-
-        <div id="question"></div>
-
-        <div id="answers"></div>
-
-        <button id="next-btn"
-            class="main-btn"
-            onclick="nextQuestion()">
-            Next Question ➡️
-        </button>
 
     </div>
 
 </div>
 
 
-<!-- RESULT SCREEN -->
-<div id="result-screen" class="screen">
+<!-- RESULT -->
 
-    <div class="card">
+<div id="result-screen"
+     class="screen">
 
-        <div class="logo">🏆</div>
+    <div class="result-wrapper">
 
-        <h1>Quiz Complete!</h1>
+        <div class="result-card">
 
-        <div id="final-score"
-            class="result-score">
+            <div class="result-trophy">
+                🏆
+            </div>
+
+            <h1>Quiz Complete!</h1>
+
+            <div id="final-score"></div>
+
+            <div id="result-message"></div>
+
+            <div id="best-score"></div>
+
+
+            <button class="result-button"
+                    onclick="restartQuiz()">
+
+                🔄 Play Again
+
+            </button>
+
+
+            <button class="result-button"
+                    onclick="goHome()">
+
+                🏠 Home
+
+            </button>
+
         </div>
 
-        <p id="result-message"
-            class="result-message">
-        </p>
-
-        <p id="best-score"
-            class="best-score">
-        </p>
-
-        <button class="main-btn"
-            onclick="restartQuiz()">
-            🔄 Play Again
-        </button>
-
-        <button class="main-btn"
-            onclick="goHome()">
-            🏠 Back to Home
-        </button>
-
     </div>
-
-</div>
 
 </div>
 
@@ -335,7 +824,7 @@ h1, h2 {
 <script>
 
 /* =========================
-   QUIZ QUESTIONS
+   QUESTIONS
 ========================= */
 
 const quizzes = {
@@ -390,7 +879,7 @@ science: [
     correct: "Heart"
 },
 {
-    question: "What gas do plants mainly use for photosynthesis?",
+    question: "What gas do plants use for photosynthesis?",
     answers: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"],
     correct: "Carbon Dioxide"
 },
@@ -408,7 +897,7 @@ gaming: [
     correct: "Mojang"
 },
 {
-    question: "Which game features the character Mario?",
+    question: "Which game features Mario?",
     answers: ["Minecraft", "Super Mario", "Fortnite", "Roblox"],
     correct: "Super Mario"
 },
@@ -428,7 +917,7 @@ gaming: [
     correct: "Minecraft"
 },
 {
-    question: "Which company makes the PlayStation console?",
+    question: "Which company makes PlayStation?",
     answers: ["Microsoft", "Nintendo", "Sony", "Sega"],
     correct: "Sony"
 }
@@ -441,12 +930,12 @@ sports: [
     correct: "11"
 },
 {
-    question: "Which sport uses a bat, ball and wickets?",
+    question: "Which sport uses wickets?",
     answers: ["Football", "Cricket", "Tennis", "Hockey"],
     correct: "Cricket"
 },
 {
-    question: "Which country hosts the Wimbledon tennis tournament?",
+    question: "Where is Wimbledon held?",
     answers: ["USA", "India", "United Kingdom", "Australia"],
     correct: "United Kingdom"
 },
@@ -456,7 +945,7 @@ sports: [
     correct: "5"
 },
 {
-    question: "Which sport is played at the NBA?",
+    question: "Which sport is played in the NBA?",
     answers: ["Football", "Basketball", "Cricket", "Baseball"],
     correct: "Basketball"
 }
@@ -471,13 +960,25 @@ sports: [
 
 let currentCategory = "";
 let currentQuestions = [];
-
 let currentQuestion = 0;
 let score = 0;
-
 let timeLeft = 15;
-let timer;
+let timer = null;
 let answered = false;
+
+
+/* =========================
+   HOME
+========================= */
+
+function scrollToCategories() {
+
+    document.getElementById("categories")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
 
 
 /* =========================
@@ -495,7 +996,8 @@ function startQuiz(category) {
 
     showScreen("quiz-screen");
 
-    document.getElementById("category-title").innerText =
+    document.getElementById("category-title")
+        .innerText =
         category.toUpperCase() + " QUIZ";
 
     loadQuestion();
@@ -512,7 +1014,6 @@ function loadQuestion() {
     clearInterval(timer);
 
     answered = false;
-
     timeLeft = 15;
 
     updateTimer();
@@ -520,13 +1021,16 @@ function loadQuestion() {
     const question =
         currentQuestions[currentQuestion];
 
-    document.getElementById("question-number").innerText =
+    document.getElementById("question-number")
+        .innerText =
         `Question ${currentQuestion + 1} of ${currentQuestions.length}`;
 
-    document.getElementById("question").innerText =
+    document.getElementById("question")
+        .innerText =
         question.question;
 
-    document.getElementById("progress-bar").style.width =
+    document.getElementById("progress-bar")
+        .style.width =
         `${((currentQuestion + 1) / currentQuestions.length) * 100}%`;
 
     const answersDiv =
@@ -534,8 +1038,8 @@ function loadQuestion() {
 
     answersDiv.innerHTML = "";
 
-    document.getElementById("next-btn").style.display =
-        "none";
+    document.getElementById("next-btn")
+        .style.display = "none";
 
     question.answers.forEach(answer => {
 
@@ -546,8 +1050,11 @@ function loadQuestion() {
 
         button.innerText = answer;
 
-        button.onclick = () =>
+        button.onclick = function() {
+
             selectAnswer(button, answer);
+
+        };
 
         answersDiv.appendChild(button);
 
@@ -564,7 +1071,7 @@ function loadQuestion() {
 
 function startTimer() {
 
-    timer = setInterval(() => {
+    timer = setInterval(function() {
 
         timeLeft--;
 
@@ -574,11 +1081,7 @@ function startTimer() {
 
             clearInterval(timer);
 
-            if (!answered) {
-
-                timeOut();
-
-            }
+            timeOut();
 
         }
 
@@ -586,43 +1089,18 @@ function startTimer() {
 
 }
 
+
 function updateTimer() {
 
-    document.getElementById("timer").innerText =
+    document.getElementById("timer")
+        .innerText =
         `⏱️ ${timeLeft}`;
-
-}
-
-function timeOut() {
-
-    answered = true;
-
-    const correctAnswer =
-        currentQuestions[currentQuestion].correct;
-
-    const buttons =
-        document.querySelectorAll(".answer");
-
-    buttons.forEach(button => {
-
-        button.disabled = true;
-
-        if (button.innerText === correctAnswer) {
-
-            button.classList.add("correct");
-
-        }
-
-    });
-
-    document.getElementById("next-btn").style.display =
-        "block";
 
 }
 
 
 /* =========================
-   SELECT ANSWER
+   ANSWER
 ========================= */
 
 function selectAnswer(button, answer) {
@@ -661,14 +1139,48 @@ function selectAnswer(button, answer) {
 
     }
 
-    document.getElementById("next-btn").style.display =
-        "block";
+    document.getElementById("next-btn")
+        .style.display = "block";
 
 }
 
 
 /* =========================
-   NEXT QUESTION
+   TIMEOUT
+========================= */
+
+function timeOut() {
+
+    if (answered) return;
+
+    answered = true;
+
+    const correctAnswer =
+        currentQuestions[currentQuestion].correct;
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(btn => {
+
+        btn.disabled = true;
+
+        if (btn.innerText === correctAnswer) {
+
+            btn.classList.add("correct");
+
+        }
+
+    });
+
+    document.getElementById("next-btn")
+        .style.display = "block";
+
+}
+
+
+/* =========================
+   NEXT
 ========================= */
 
 function nextQuestion() {
@@ -689,7 +1201,7 @@ function nextQuestion() {
 
 
 /* =========================
-   RESULTS
+   RESULT
 ========================= */
 
 function showResult() {
@@ -698,37 +1210,39 @@ function showResult() {
 
     showScreen("result-screen");
 
-    document.getElementById("final-score").innerText =
+    document.getElementById("final-score")
+        .innerText =
         `${score} / ${currentQuestions.length}`;
-
-    let message = "";
 
     const percentage =
         (score / currentQuestions.length) * 100;
 
+    let message;
+
     if (percentage === 100) {
 
         message =
-            "🔥 Perfect score! You are a Quiz Master!";
+            "🔥 Perfect! You are a true Quiz Master!";
 
     } else if (percentage >= 80) {
 
         message =
-            "🌟 Excellent job!";
+            "🌟 Excellent work!";
 
     } else if (percentage >= 60) {
 
         message =
-            "👏 Good job! Keep improving!";
+            "👏 Great job!";
 
     } else {
 
         message =
             "💪 Keep practicing and try again!";
+
     }
 
-    document.getElementById("result-message").innerText =
-        message;
+    document.getElementById("result-message")
+        .innerText = message;
 
     saveBestScore();
 
@@ -736,13 +1250,13 @@ function showResult() {
 
 
 /* =========================
-   SAVE BEST SCORE
+   BEST SCORE
 ========================= */
 
 function saveBestScore() {
 
     const key =
-        "quizMaster_" + currentCategory;
+        "varadQuiz_" + currentCategory;
 
     let best =
         localStorage.getItem(key);
@@ -755,8 +1269,9 @@ function saveBestScore() {
 
     }
 
-    document.getElementById("best-score").innerText =
-        `🏆 Best ${currentCategory} score: ${best} / ${currentQuestions.length}`;
+    document.getElementById("best-score")
+        .innerText =
+        `🏆 Best ${currentCategory} score: ${best}/${currentQuestions.length}`;
 
 }
 
@@ -786,23 +1301,22 @@ function goHome() {
 
 
 /* =========================
-   SCREEN SWITCHING
+   SCREEN
 ========================= */
 
 function showScreen(screenId) {
 
-    const screens =
-        document.querySelectorAll(".screen");
+    document.querySelectorAll(".screen")
+        .forEach(screen => {
 
-    screens.forEach(screen => {
+            screen.classList.remove("active");
 
-        screen.classList.remove("active");
+        });
 
-    });
-
-    document
-        .getElementById(screenId)
+    document.getElementById(screenId)
         .classList.add("active");
+
+    window.scrollTo(0, 0);
 
 }
 
